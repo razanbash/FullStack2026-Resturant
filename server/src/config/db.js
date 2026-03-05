@@ -1,14 +1,15 @@
 //connect postegresql with node
 
-import { pool } from "pg";
+import { Pool } from "pg";
 import dotenv from "dotenv";
 dotenv.config();
 
-const pool = new Pool({
-  connectionString: process.env.connection_string,
+ export const pool = new Pool({
+    
+  connectionString: process.env.CCONNECTION_STRING,
 });
 
-pool.connectDB = async () => {
+export const connectDB = async () => {
     try {
       const client = await pool.connect();
       console.log("PostgreSQL connected successfilly");
@@ -19,5 +20,3 @@ pool.connectDB = async () => {
     }
 }
 
-
-export {connectDB, pool}
