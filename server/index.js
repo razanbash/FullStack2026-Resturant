@@ -7,11 +7,14 @@ import cors from "cors";
 import helmet from "helmet";
 dotenv.config();
 connectDB();
+
+
 const app = express ()
+app.use(express.json())
 app.use(helmet())
 app.use(cors({
   origin:"http://localhost:5000",
-  withCaredentials: true,
+  Caredentials: true,
   methods:["GET","POST","PUT","DELETE"],
 }))
 
