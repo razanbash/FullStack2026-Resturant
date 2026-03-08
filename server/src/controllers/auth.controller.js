@@ -19,8 +19,6 @@ import {
 export const register = async (req, res) => {
   const { name, email, password, role } = req.validateData;
 
-  console.log(req.validateData);
-
   try {
     const existedUser = await findUserByEmail(email);
 
@@ -36,10 +34,15 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: "failed to create user" });
     }
 
+    // 🔥 هنا ننشئ التوكن
+    const accessToken = generateAccessTokens(newUser);
+
     return res.status(201).json({
       message: "user created successfully",
       user: newUser,
+      accessToken,
     });
+
   } catch (err) {
     return res
       .status(500)
@@ -59,7 +62,7 @@ export const login = async (req, res) => {
 
     const isExist = await findUserByEmail(email);
 
-    if (!isUserExist) {
+    if (!isExist) {
       return res.status(400).json({
         message: "User not registered, please register to log in",
       });
@@ -74,17 +77,18 @@ export const login = async (req, res) => {
     }
 
     //generate tokens => access. refresh
-    const accessToken = generateAccessTokens(isUserExist);
-    const refreshTokens = generateRefreshTokens(isUserExist);
-
+    const accessToken = generateAccessTokens(isExist);
+    const refreshTokens = generateRefreshTokens(isExist);
+    console.log(accessToken);
     //should store the refresh tokens in db
-    await saveRefreshToken(isUserExist.id, refreshTokens);
+    await saveRefreshToken(isExist.id, refreshTokens);
     //set tokens in cookies
     setAccessTokenCookie(res, accessToken);
     setRefreshTokenCookie(res, refreshTokens);
 
-    return res.status(200).json({ message: "Login successful", user: isExist });
+    return res.status(200).json({ message: "Login successful",accessToken, user: isExist });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ message: "internal server error in login" });
   }
 };
