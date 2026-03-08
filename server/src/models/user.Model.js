@@ -43,6 +43,16 @@ export const deleteUserById = async (id) => {
 };
 
 
-export const saveRefreshToken = async (id, refreshToken) => {
-  await pool.query(`update users set refresh_token = &1 where id = $2` , [refreshToken, id])
-}
+// export const saveRefreshToken = async (id, refreshToken) => {
+//   await pool.query(`update users set refresh_token = &1 where id = $2` , [refreshToken, id])
+// } insted the code don here start from line 51-58.
+
+
+export const saveRefreshToken = async (userId, refreshToken) => {
+  const query = `
+    UPDATE users
+    SET refresh_token = $1
+    WHERE id = $2
+  `;
+  return pool.query(query, [refreshToken, userId]);
+};
