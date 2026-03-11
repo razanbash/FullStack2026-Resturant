@@ -129,8 +129,6 @@ const theme = createTheme({
   spacing: 8,
 });
 
- set-up-client-side-front-end
 export default theme;
 
-export default theme;
- main
+ 
