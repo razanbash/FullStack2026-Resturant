@@ -36,3 +36,42 @@ where id=3
 
 --delete
 delete from users  where id=3
+
+
+
+
+alter table users add column role text[]default array['user']
+
+select * from users
+
+alter table users add constraint check_role check(role<@ array['user','manager','emplyee'])
+
+
+
+-----
+
+
+
+create table categories (
+catId serial primary key ,
+name varchar (50) not null,
+description text
+)
+select * from categories
+
+alter table categories add column created_at timestamp default current_timestamp
+
+create table menu(
+menuId serial primary key,
+name varchar (100) not null,
+description text , 
+price money,
+quantity int,
+image text,
+cat_id int,
+foreign key(cat_id) references categories(catId)
+)
+
+select * from menu
+alter table menu add column created_at timestamp default current_timestamp
+
