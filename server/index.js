@@ -4,6 +4,7 @@ import authRoutes from "./src/routes/auth.Routes.js";
 import express from "express";
 import { errorHandler } from "./src/middleware/errorHandler.Middleware.js";
 import cors from "cors";
+import { globalRateLimit } from "./src/middleware/globalRateLimit.Middleware.js";
 import userRoutes from "./src/routes/user.Routes.js";
 import helmet from "helmet";
 import bodyParser from "body-parser";
@@ -13,6 +14,7 @@ connectDB();
 
 const app = express();
 app.use(express.json());
+app.use(globalRateLimit);
 app.use(helmet());
 app.use(
   cors({
