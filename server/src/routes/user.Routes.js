@@ -10,3 +10,4 @@ router.get("/user/id", protect, getUserByIdController);
 router.get("/users", protect, getAllUsersController);
 router.post("/users/email", protect, findUserByEmailController);
 export default router;
+
