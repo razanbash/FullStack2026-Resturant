@@ -13,10 +13,11 @@ import {
   generateRefreshTokens,
   verifyRefreshTokens,
 } from "../utils/tokens.utils.js";
+import { asyncHandler } from "../middleware/asyncHandler.Middleware.js";
 
 /////////// Register logic
 
-export const register = async (req, res) => {
+export const register = asyncHandler(async (req, res) => {
   const { name, email, password, role } = req.validateData;
 
   try {
@@ -42,38 +43,40 @@ export const register = async (req, res) => {
       user: newUser,
       accessToken,
     });
-
   } catch (err) {
     return res
       .status(500)
       .json({ message: "internal server error, in register" });
   }
-};
+});
 
 //////////// login logic
 
-export const login = async (req, res) => {
+export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.validateData;
 
   try {
     if (!email || !password) {
+      const error = new Error("All fields are required");
+      error.statusCode = 400;
+      throw error;
       return res.status(400).json({ message: "all fields are required" });
     }
 
     const isExist = await findUserByEmail(email);
 
     if (!isExist) {
-      return res.status(400).json({
-        message: "User not registered, please register to log in",
-      });
+      const error = new Error("User not registered, please register to log in");
+      error.statusCode = 400;
+      throw error;
     }
 
     const isMatch = await bcrypt.compare(password, isExist.hashed_password);
 
     if (!isMatch) {
-      return res
-        .status(400)
-        .json({ message: "password or email is incorrect" });
+      const error = new Error("incorrect password or email");
+      error.statusCode = 400;
+      throw error;
     }
 
     //generate tokens => access. refresh
@@ -86,12 +89,15 @@ export const login = async (req, res) => {
     setAccessTokenCookie(res, accessToken);
     setRefreshTokenCookie(res, refreshTokens);
 
-    return res.status(200).json({ message: "Login successful",accessToken, user: isExist });
+    return res
+      .status(200)
+      .json({ message: "Login successful", accessToken, user: isExist });
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: "internal server error in login" });
+    const error = new Error("incorrect password or email");
+    error.statusCode = 400;
+    throw error;
   }
-};
+});
 
 export const refreshToken = async (req, res) => {
   const token = req.cookies.refreshToken;
@@ -117,8 +123,24 @@ export const refreshToken = async (req, res) => {
 
     res.json({ message: "access tokens refreshed successfully" });
   } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "internal server error in refresh tokens" });
+    return res;
+    throw err;
   }
 };
+
+export const logout = asyncHandler(async (req, res) => {
+  try {
+    if (!token)
+      return res.status(400).json({ message: "No refresh token provided" });
+
+    const decoded = verifyRefreshTokens(token);
+    await saveRefreshToken(decoded.userid, null);
+
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshTokens");
+
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (err) {
+    throw err;
+  }
+});
