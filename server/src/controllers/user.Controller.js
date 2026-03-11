@@ -6,8 +6,12 @@ import {
   deleteUserById,
   updateUserById,
 } from "../models/user.Model.js";
+import { asyncHandler } from "../middleware/asyncHandler.Middleware.js";
 import bodyParser from "body-parser";
-export const getUserByIdController = async (req, res) => {
+
+
+
+export const getUserByIdController = asyncHandler (async (req, res) => {
   const id = req.params;
 
   try {
@@ -19,10 +23,10 @@ export const getUserByIdController = async (req, res) => {
   } catch (err) {
     return res.status(500).json({ message: "internal server error" });
   }
-};
+});
 
 /// i added this not from my teacher
-export const getAllUsersController = async (req, res) => {
+export const getAllUsersController = asyncHandler (async (req, res) => {
   try {
     const users = await getAllUsers();
 
@@ -35,9 +39,9 @@ export const getAllUsersController = async (req, res) => {
       message: err.message,
     });
   }
-};
+});
 
-export const findUserByEmailController = async (req, res) => {
+export const findUserByEmailController = asyncHandler( async (req, res) => {
   const { email } = req.body;
   try {
     const user = await findUserByEmail(email);
@@ -48,4 +52,4 @@ export const findUserByEmailController = async (req, res) => {
   } catch (err) {
     return res.status(500).json({ message: "internal server error" });
   }
-};
+});
