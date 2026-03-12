@@ -19,8 +19,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: "http://localhost:5000",
-    Caredentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   }),
 );
 app.use(cookieParser());
