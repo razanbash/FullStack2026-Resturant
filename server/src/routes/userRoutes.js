@@ -3,7 +3,7 @@ import {
   getUserByIdController,
   findUserByEmailController,
 } from "../controllers/user.Controller.js";
-import { protect } from "../middleware/protect.Middleware.js";
+import  protect from "../middleware/protectMiddleware.js";
 import express from "express";
 import { managerOnly } from "../middleware/manegerOnly.Middleware.js";
 
