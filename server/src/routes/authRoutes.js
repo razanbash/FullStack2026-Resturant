@@ -17,15 +17,18 @@
 
 
 
-import { login, register } from "../controllers/auth.controller.js";
+import { currentUser, login, logout, register } from "../controllers/auth.controller.js";
 import { registerSchema, loginSchema } from "../validation/user.Validation.js";
 import { validate } from "../middleware/validateMiddleware.js";
 import { authRateLimit } from "../middleware/authRateLimit.Middleware.js";
 import express from "express";
+import  protect from "../middleware/protectMiddleware.js";
 
 const router = express.Router();
 
 router.post("/register", validate(registerSchema), authRateLimit, register);
 router.post("/login", validate(loginSchema), authRateLimit, login);
+router.post("/auth/logout", logout);     
+router.post("/auth/me" , protect, currentUser)
 
 export default router;
